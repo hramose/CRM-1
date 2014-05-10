@@ -78,21 +78,3 @@ Route::filter('csrf', function()
 		throw new Illuminate\Session\TokenMismatchException;
 	}
 });
-
-
-// Создание фильтра
-Route::filter('old', function () {
-  if (Input::get('id') !== 200) {
-    // return Redirect::to('/' . Input::get('id'));
-    echo '<pre>';
-    var_dump(Input::get('id'));
-    exit();
-  }
-});
-
-
-
-
-
-
-
