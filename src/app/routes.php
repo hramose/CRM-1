@@ -14,6 +14,24 @@ Route::get('/', array(
 
 
 
+
+
+/*
+| аутентифицированные пользователи
+*/
+Route::group(array('before'=>'auth'), function () {
+    // Sign out (GET)
+    Route::get('/account/sign-out', array(
+            'as' => 'account-sign-out',
+            'uses' => 'AccountController@getSignOut'
+        )
+    );
+});
+
+
+
+
+
 // Не аутентифицированные
 Route::group(array('before'=>'guest'), function () {
 
@@ -26,7 +44,17 @@ Route::group(array('before'=>'guest'), function () {
             'uses'=>'AccountController@postCreate'
         ));
 
+
+
+        // Авторизоваться (POST)
+        Route::post('/account/sign-in', array(
+            'as' => 'account-sign-in-post',
+            'uses' => 'AccountController@postSignIn'
+        ));
+
     });
+
+
 
 
     // создание аккаунта (GET)
@@ -39,5 +67,24 @@ Route::group(array('before'=>'guest'), function () {
         'as' => 'account-activate',
         'uses' => 'AccountController@getActivate'
     ));
+
+
+
+    // Авторизоваться (GET)
+    Route::get('/account/sign-in', array(
+        'as' => 'account-sign-in',
+        'uses' => 'AccountController@getSignIn'
+    ));
 });
+
+
+
+
+
+
+
+
+
+
+
 

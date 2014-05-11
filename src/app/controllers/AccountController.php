@@ -2,6 +2,60 @@
 
 class AccountController extends BaseController {
 
+    public function getSignIn() {
+        return View::make('account.signin');
+    }
+
+
+
+    public function getSignOut() {
+        Auth::logout();
+        return Redirect::route('home');
+    }
+
+
+
+    public function postSignIn() {
+        $validator = Validator::make(Input::all(), array(
+                'email' => 'required|email',
+                'password' => 'required'
+            )
+        );
+
+        if($validator->fails()){
+            return Redirect::route('account-sign-in')
+                    ->withErrors($validator)
+                    ->withInput();
+        }else{
+
+            $remember = (Input::has('remember')) ? true : false;
+
+            // авторизация прошла успешно
+            $auth = Auth::attempt(array(
+                    'email' => Input::get('email'),
+                    'password' => Input::get('password'),
+                    'active' => 1
+                ),
+                $remember
+            );
+
+            if($auth){
+                //  Редирект на страницу с доступом авторизованному пользователю
+                return Redirect::intended('/');
+            }else{
+
+                return Redirect::route('account-sign-in')
+                        ->with('global', 'Не верные email или пароль, либо аккаунт не активирован.');
+            }
+
+            return Redirect::route('account-sign-in')
+                    ->with('global', 'При авторизации возникли проблемы. Вы активированы?');
+        }
+
+    }
+
+
+
     public function getCreate() {
         return View::make('account.create');
     }
@@ -9,8 +63,6 @@ class AccountController extends BaseController {
 
 
     public function postCreate() {
-
-
 
         $validator = Validator::make(
             Input::all(),
@@ -59,6 +111,7 @@ class AccountController extends BaseController {
             }
         }
     }
+
 
 
     public function getActivate($code) {

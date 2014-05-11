@@ -2,6 +2,16 @@
 
 
 @section('content')
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam, ducimus ullam debitis rem ab quae doloribus maxime? Perspiciatis, est, amet, at, neque quae sed doloribus quo ab nemo delectus fugiat.
+
+    @if(Auth::check())
+
+        <p>Привет, {{Auth::user()->username}}.</p>
+
+    @else
+
+        <p>вы не зарегистрированы</p>
+
+    @endif
+
 @stop
 
