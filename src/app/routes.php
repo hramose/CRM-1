@@ -26,6 +26,27 @@ Route::group(array('before'=>'auth'), function () {
             'uses' => 'AccountController@getSignOut'
         )
     );
+
+
+    // Смена пароля (GET)
+    Route::get('/account/change-password', array(
+            'as' => 'account-change-password',
+            'uses' => 'AccountController@getChangePassword'
+        )
+    );
+
+
+    // CSRF
+    Route::group(array('before'=>'csrf'), function () {
+        // Смена пароля (POST)
+        Route::post('/account/change-password', array(
+                'as' => 'account-change-password-post',
+                'uses' => 'AccountController@postChangePassword'
+            )
+        );
+    });
+
+
 });
 
 

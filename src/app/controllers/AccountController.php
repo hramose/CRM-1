@@ -135,6 +135,48 @@ class AccountController extends BaseController {
     }
 
 
+
+    public function getChangePassword() {
+        return View::make('account.password');
+    }
+
+
+    public function getChangePassword() {
+        $validator = $Validator::make(Input::all(), array(
+                'old_password'      => 'required',
+                'password'      => 'required|min:6',
+                'password_again'=> 'required|same:password'
+            )
+        );
+
+        if($validator->fails()){
+            return Redirect::route('account-change-password')
+                    ->withErrors($validator);
+        }else{
+            // Смена пароля
+            $user = User::find(Auth::user()->id);
+
+            $old_password = Input::get('old_password');
+            $password = Input::get('password');
+
+            if(Hash::check($old_password, $user->getAuthPassword())){
+                // Пароли разные все идет по плану
+                $user->password = Hash::make($password);
+
+                if($user->save()){
+                    return Redirect::route('home')
+                            ->with('global', 'Ваш пароль изменен.');
+
+                }
+
+            }
+        }
+
+        return Redirect::route('account-change-password')
+                    ->with('global', 'Ваш пароль не может быть изменен.');
+    }
+
+
 }
 
 
