@@ -10,6 +10,7 @@
 
         <li><a href="{{ URL::route('account-create') }}">Создать аккаунт</a></li>
         <li><a href="{{ URL::route('account-sign-in') }}">Авторизоваться</a></li>
+        <li><a href="{{ URL::route('account-forgot-password') }}">Забыли пароль?</a></li>
 
         @endif
     </ul>

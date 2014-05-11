@@ -79,8 +79,17 @@ Route::group(array('before'=>'guest'), function () {
             'uses' => 'AccountController@postSignIn'
         ));
 
-    });
 
+
+        // Забыли пароль (POST)
+        Route::post('/account/forgot', array(
+                'as' => 'account-forgot-password-post',
+                'uses' => 'AccountController@postForgotPassword'
+            )
+        );
+
+    });
+    // /////////////////////
 
 
 
@@ -102,6 +111,25 @@ Route::group(array('before'=>'guest'), function () {
         'as' => 'account-sign-in',
         'uses' => 'AccountController@getSignIn'
     ));
+
+
+
+    // Забыли пароль (GET)
+    Route::get('/account/forgot', array(
+            'as' => 'account-forgot-password',
+            'uses' => 'AccountController@getForgotPassword'
+        )
+    );
+
+
+    // Восстановление пароля
+    Route::get('/account/recover/{code}', array(
+            'as' => 'account-recover',
+            'uses' => 'AccountController@getRecover'
+        )
+    );
+
+
 });
 
 

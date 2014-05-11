@@ -177,6 +177,80 @@ class AccountController extends BaseController {
     }
 
 
+
+    public function getForgotPassword() {
+        return View::make('account.forgot');
+    }
+
+    public function postForgotPassword() {
+        $validator = Validator::make(Input::all(),
+            array('email'=>'required|email'))
+        );
+
+        if($validator->fails()){
+            return Redirect::route('account-forgot-password')
+                    ->withErrors($validator)
+                    ->withInput();
+        }else{
+            // Меняем пароль
+            $user = User::where('emial', '=', Input::get('email'));
+
+            if($user->count()){
+                $user = $user->first();
+
+                $code     = str_random(60);
+                $password = str_random(7)
+
+                $user->code = $code;
+                $user->password_temp = Hash::make($password);
+
+                if($user->save()){
+                    Mail::send('emails.auth.forgot',
+                        array(
+                            'link'=>URL::route('account-recover', $code),
+                            'username'=>$user->username,
+                            'password'=>$password
+                        ), function ($message) use ($user) {
+                            $message->to($user->email, $user->username)->subject('Ваш новый пароль');
+                        });
+
+                    return Redirect::route('home')
+                            ->with('global', 'Мы выслали на ваш email ссылку для восстановления пароля');
+                }
+            }
+        }
+
+
+        return Redirect::route('account-forgot-password')
+                ->with('global', 'Не удалось изменить пароль');
+
+    }
+
+
+
+    public function getRecover($code) {
+
+        $user = User::where('code', '=', $code)
+                    ->where('password', '!=', '')
+
+        if($user->count()){
+            $user = $user->first();
+
+            $user->password      = $user->password_temp;
+            $user->password_temp = '';
+            $user->code          = '';
+
+            if($user->save()){
+                return Redirect::route('home')
+                        ->with('global', 'Вы можете авторизавться с новым паролем');
+            }
+        }
+
+        return Redirect::route('home')
+                ->with('global', 'Восстановить доступ не удалось');
+    }
+
+
 }
 
 
