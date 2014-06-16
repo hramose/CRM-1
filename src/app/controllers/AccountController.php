@@ -141,7 +141,7 @@ class AccountController extends BaseController {
     }
 
 
-    public function getChangePassword() {
+    public function postChangePassword() {
         $validator = $Validator::make(Input::all(), array(
                 'old_password'      => 'required',
                 'password'      => 'required|min:6',
@@ -184,7 +184,7 @@ class AccountController extends BaseController {
 
     public function postForgotPassword() {
         $validator = Validator::make(Input::all(),
-            array('email'=>'required|email'))
+            array('email'=>'required|email')
         );
 
         if($validator->fails()){
@@ -199,7 +199,7 @@ class AccountController extends BaseController {
                 $user = $user->first();
 
                 $code     = str_random(60);
-                $password = str_random(7)
+                $password = str_random(7);
 
                 $user->code = $code;
                 $user->password_temp = Hash::make($password);
@@ -231,7 +231,7 @@ class AccountController extends BaseController {
     public function getRecover($code) {
 
         $user = User::where('code', '=', $code)
-                    ->where('password', '!=', '')
+                    ->where('password', '!=', '');
 
         if($user->count()){
             $user = $user->first();
