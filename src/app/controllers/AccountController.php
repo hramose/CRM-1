@@ -193,7 +193,7 @@ class AccountController extends BaseController {
                     ->withInput();
         }else{
             // Меняем пароль
-            $user = User::where('emial', '=', Input::get('email'));
+            $user = User::where('email', '=', Input::get('email'));
 
             if($user->count()){
                 $user = $user->first();
@@ -252,19 +252,3 @@ class AccountController extends BaseController {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
