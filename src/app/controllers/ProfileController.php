@@ -3,7 +3,12 @@
 
 class ProfileController extends BaseController {
 
-    public function user($username) {
+    public function user($username = '') {
+
+        if($username===''){
+            return 123;
+        }
+
         $user = User::where('username', '=', $username);
 
 

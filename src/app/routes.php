@@ -13,8 +13,7 @@ Route::get('/', array(
 ));
 
 
-
-Route::get('/user/{username}', array(
+Route::get('/user/{username?}', array(
         'as' => 'profile-user',
         'uses' => 'ProfileController@user'
     )
@@ -72,13 +71,11 @@ Route::group(array('before'=>'guest'), function () {
         ));
 
 
-
         // Авторизоваться (POST)
         Route::post('/account/sign-in', array(
             'as' => 'account-sign-in-post',
             'uses' => 'AccountController@postSignIn'
         ));
-
 
 
         // Забыли пароль (POST)
@@ -131,9 +128,6 @@ Route::group(array('before'=>'guest'), function () {
 
 
 });
-
-
-
 
 
 
