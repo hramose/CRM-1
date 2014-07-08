@@ -6,7 +6,7 @@ class ProfileController extends BaseController {
     public function user($username = '') {
 
         if($username===''){
-            return 123;
+            return 'Show all users';
         }
 
         $user = User::where('username', '=', $username);

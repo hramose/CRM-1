@@ -7,6 +7,20 @@
 |
 */
 
+Route::get('/test', function () {
+
+    header('Content-Type: text/html; charset=utf-8');
+
+    $user  = User::find(1);
+
+    $x = $user->group->name;
+
+    dd($x);
+
+});
+
+
+
 Route::get('/', array(
     'as'=> 'home',
     'uses'=> 'HomeController@home'
@@ -125,7 +139,6 @@ Route::group(array('before'=>'guest'), function () {
             'uses' => 'AccountController@getRecover'
         )
     );
-
 
 });
 
