@@ -19,6 +19,7 @@ class CreateUsers extends Migration {
             $table->string('password', 60);
             $table->string('password_temp', 60);
             $table->string('code', 60);
+            $table->string('remember_token', 100)->nullable();
             $table->boolean('active');
             $table->integer('groups_id');
             $table->boolean('group_admin');

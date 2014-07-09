@@ -142,12 +142,15 @@ class AccountController extends BaseController {
 
 
     public function postChangePassword() {
-        $validator = $Validator::make(Input::all(), array(
-                'old_password'      => 'required',
+
+
+        $validator = Validator::make(Input::all(), array(
+                'old_password'  => 'required',
                 'password'      => 'required|min:6',
                 'password_again'=> 'required|same:password'
             )
         );
+
 
         if($validator->fails()){
             return Redirect::route('account-change-password')
@@ -166,9 +169,7 @@ class AccountController extends BaseController {
                 if($user->save()){
                     return Redirect::route('home')
                             ->with('global', 'Ваш пароль изменен.');
-
                 }
-
             }
         }
 

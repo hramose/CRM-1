@@ -7,9 +7,11 @@
 
         <p>Привет, {{Auth::user()->username}}.</p>
 
+        @include('profile.company-list')
+
     @else
 
-        <p>вы не зарегистрированы</p>
+        <h2>вы не зарегистрированы</h2>
 
     @endif
 

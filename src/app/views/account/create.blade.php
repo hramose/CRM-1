@@ -2,36 +2,35 @@
 
 @section('content')
 
-{{ Form::open(array('url' => URL::route('account-create-post'))) }}
+{{ Form::open(array('url' => URL::route('account-create-post'), 'class'=>'col-xs-6 col-sm-3')) }}
     <hr>
-    {{ Form::label('email', 'Адрес e-mail') }}
-    {{ Form::email('email', '', array('placeholder'=>'example@gmail.com'))}}
-    @if($errors->has('email'))
-        {{ $errors->first('email') }}
-    @endif
-    <br>
-    {{ Form::label('username', 'Имя') }}
-    {{ Form::text('username')}}
-    @if($errors->has('username'))
-        {{ $errors->first('username') }}
-    @endif
-    <br>
-    {{ Form::label('password', 'Пароль') }}
-    {{ Form::password('password')}}
-    @if($errors->has('password'))
-        {{ $errors->first('password') }}
-    @endif
-    <br>
-    {{ Form::label('password_again', 'Пароль') }}
-    {{ Form::password('password_again')}}
-    @if($errors->has('password_again'))
-        {{ $errors->first('password_again') }}
-    @endif
-    <br>
+    <div class="form-group">
+        {{ Form::label('email', 'Адрес e-mail') }}
+        {{ Form::email('email', '', array('placeholder'=>'example@gmail.com', 'class'=>'form-control'))}}
+        {{ error_for('email', $errors) }}
+    </div>
+
+    <div class="form-group">
+        {{ Form::label('username', 'Имя') }}
+        {{ Form::text('username', '', array('class'=>'form-control')) }}
+        {{ error_for('username', $errors) }}
+    </div>
+
+    <div class="form-group">
+        {{ Form::label('password', 'Пароль') }}
+        {{ Form::password('password', array('class'=>'form-control')) }}
+        {{ error_for('password', $errors) }}
+    </div>
+
+    <div class="form-group">
+        {{ Form::label('password_again', 'Пароль') }}
+        {{ Form::password('password_again', array('class'=>'form-control')) }}
+        {{ error_for('password_again', $errors) }}
+    </div>
 
 
 
-    {{ Form::submit('Зарегистрироваться') }}
+    {{ Form::submit('Зарегистрироваться', array('class'=>'btn btn-primary')) }}
 
 {{ Form::close() }}
 

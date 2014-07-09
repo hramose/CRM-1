@@ -66,6 +66,12 @@ Route::group(array('before'=>'auth'), function () {
     });
 
 
+    /**
+     * роуты внутри админки
+     */
+    include 'routes/auth_routes.php';
+
+
 });
 
 

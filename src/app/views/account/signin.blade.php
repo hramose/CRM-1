@@ -2,30 +2,22 @@
 
 @section('content')
 
-{{ Form::open(array('url' => URL::route('account-sign-in-post'))) }}
-    <br>
-    {{ Form::label('email', 'Адрес e-mail:') }}
-    {{ Form::email('email', '', array('placeholder'=>'example@gmail.com'))}}
+{{ Form::open(array('url' => URL::route('account-sign-in-post'), 'class'=>'form-signin')) }}
+    <h1 class="form-signin-heading text-muted">Авторизация</h1>
+
+    {{ Form::email('email', '', array('placeholder'=>'example@gmail.com', 'class'=>'form-control', 'required'=>'', 'autofocus'=>'')) }}
     @if($errors->has('email'))
         {{ $errors->first('email') }}
     @endif
-    <br>
 
-    {{ Form::label('password', 'Пароль:') }}
-    {{ Form::password('password')}}
+    {{ Form::password('password', array('placeholder'=>'password', 'class'=>'form-control', 'required'=>'')) }}
     @if($errors->has('password'))
         {{ $errors->first('password') }}
     @endif
-    <br>
 
-    {{ Form::label('remember', 'Запомнить меня:') }}
-    {{ Form::checkbox('remember') }}
-
-    <br>
-    {{ Form::submit('Авторизоваться') }}
+    {{ Form::submit('Авторизоваться', array('class'=>'btn btn-lg btn-primary btn-block')) }}
 
 {{ Form::close() }}
-
 
 
 @stop
