@@ -3,22 +3,26 @@
     <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
 
+            <!-- Куратор -->
             <li class="navbar-form col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <div class="form-group">
                     <label for="">Куратор</label>
                     <select class="form-control"
                             ng-model="curator"
+                            ng-change="rePage(1, true)"
                             ng-options="sl.id as sl.name for sl in curators">
                             <option value="0">Все</option>
                     </select>
                 </div>
             </li>
 
+            <!-- Статус -->
             <li class="navbar-form col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <div class="form-group">
                     <label for="">Статус</label>
                     <select class="form-control"
                             ng-model="status"
+                            ng-change="rePage(1, true)"
                             ng-options="sl.id as sl.name for sl in statuses">
                             <option value="0">Все</option>
                     </select>
@@ -26,6 +30,7 @@
             </li>
         </ul>
 
+        <!-- Поиск -->
         <ul class="nav navbar-nav navbar-right">
             <li class="navbar-form">
                 <div class="form-group">

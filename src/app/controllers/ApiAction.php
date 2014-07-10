@@ -8,7 +8,29 @@ class ApiAction extends \BaseController {
                 'items' => array()
             );
 
-        $clients = Client::all();
+
+
+
+        // $clients = Client::where('user_id', '=', '1');
+
+        $filter = array(
+              'page'   => (int)Input::get('page'),
+              'curator'=> (int)Input::get('curator'),
+              'status' => (int)Input::get('status'),
+              );
+
+
+        $clients = DB::table('clients')->where(function ($query) use ($filter) {
+            // if($filter['page'])
+                // $query->where('', '=', $filter['page']);
+
+            if($filter['curator'])
+                $query->where('user_id', '=', $filter['curator']);
+
+            if($filter['status'])
+                $query->where('status_id', '=', $filter['status']);
+
+        })->get();
 
 
         foreach ($clients as $v) {
@@ -17,6 +39,7 @@ class ApiAction extends \BaseController {
                     'name' => $v->name,
                     'url' => $v->url,
                     'contact' => '123 123',
+                    'page' => Input::get('page')
                 );
         }
 
