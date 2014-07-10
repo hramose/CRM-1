@@ -14,20 +14,12 @@ class DatabaseSeeder extends Seeder {
         Group::truncate();
         User::truncate();
         Client_status::truncate();
+        Client::truncate();
 
         $group = new Group;
-        $group->name = 'Админы';
+        $group->name = 'Администратор';
         $group->rule = '1111';
         $group->save();
-
-        $user = new User;
-        $user->email = 'a.1.3@mail.ru';
-        $user->username = 'Aleksey Pivkin';
-        $user->password = Hash::make('123123');
-        $user->active = 1;
-        $user->groups_id = 1;
-        $user->group_admin = 1;
-        $user->save();
 
 
         // заполняем таблицу статусов
@@ -40,7 +32,14 @@ class DatabaseSeeder extends Seeder {
         }
 
 
-		// $this->call('UserTableSeeder');
+		$this->call('FakerSeeder');
 	}
+
+
+
+
+
+
+
 
 }

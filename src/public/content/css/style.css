@@ -12,3 +12,7 @@
 
 
     .pagination a{cursor: pointer;}
+
+
+.form-group .form-control.search-model{width: 170%;}
+.created_at{display: block; color: #62A4B1; font-size: 0.9em; }

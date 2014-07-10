@@ -13,7 +13,7 @@ class Client_status  extends Eloquent {
     */
    public function contacts()
    {
-       return $this->belongToMany('Client', 'client_id');
+       return $this->belongsToMany('Client', 'client_id');
    }
 
 }

@@ -2,16 +2,16 @@
 
 class ApiAction extends \BaseController {
 
+
+    /**
+     * Показываем клиентов в зависимости от фильтра
+     *
+     */
     public function postShow() {
 
         $data = array(
                 'items' => array()
             );
-
-
-
-
-        // $clients = Client::where('user_id', '=', '1');
 
         $filter = array(
               'page'   => (int)Input::get('page'),
@@ -20,9 +20,8 @@ class ApiAction extends \BaseController {
               );
 
 
-        $clients = DB::table('clients')->where(function ($query) use ($filter) {
-            // if($filter['page'])
-                // $query->where('', '=', $filter['page']);
+
+        $clients = Client::where(function ($query) use ($filter) {
 
             if($filter['curator'])
                 $query->where('user_id', '=', $filter['curator']);
@@ -30,16 +29,17 @@ class ApiAction extends \BaseController {
             if($filter['status'])
                 $query->where('status_id', '=', $filter['status']);
 
-        })->get();
+        })->orderBy('created_at', 'DESC')->get();
 
 
         foreach ($clients as $v) {
 
             $data['items'][] = array(
-                    'name' => $v->name,
-                    'url' => $v->url,
-                    'contact' => '123 123',
-                    'page' => Input::get('page')
+                    'name'       => $v->name,
+                    'url'        => explode(' ', $v->url),
+                    'created_at' => date("d.m.Y", strtotime( $v->created_at)),
+                    'contact'    => $v->contacts->toArray(),
+                    'page'       => Input::get('page')
                 );
         }
 
@@ -48,6 +48,10 @@ class ApiAction extends \BaseController {
     }
 
 
+    /**
+     * Список статусов
+     *
+     */
     public function postStatuses() {
         $data = array('items' => Client_status::all()->toJson());
 
@@ -55,6 +59,10 @@ class ApiAction extends \BaseController {
     }
 
 
+    /**
+     * Список кураторов
+     *
+     */
     public function postCurators() {
         $data = array('items' => User::all()->toJson());
 

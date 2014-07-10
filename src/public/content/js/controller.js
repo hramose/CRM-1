@@ -67,7 +67,8 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                                 id: data.items[i].id,
                                 name: data.items[i].name,
                                 url: data.items[i].url,
-                                contact: data.items[i].contact
+                                contact: data.items[i].contact,
+                                created_at: data.items[i].created_at
                             });
                         }
                     }
@@ -79,24 +80,7 @@ CRM.controller('MainCtrl', ['$scope', '$http',
         };
 
 
-        // переопределение страницы паджинации и списка компаний как параметр
-        $scope.rePage = function(pg, do_show) {
-
-            if (!pg)
-                return false;
-
-            $scope.page = pg;
-            $scope.pages = [];
-
-            for (var i = 1; i <= 2; i++) {
-                $scope.pages.push(i);
-            }
-
-            if(do_show)
-                $scope.show();
-        };
-        $scope.rePage(1, true);
-
-
+        $scope.show();
     }
+
 ]);
