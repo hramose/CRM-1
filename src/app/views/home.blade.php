@@ -7,7 +7,7 @@
 
         <p>Привет, {{Auth::user()->username}}.</p>
 
-        @include('profile.company-list')
+        <div ng-view></div>
 
     @else
 

@@ -16,6 +16,7 @@ class CreateClients extends Migration {
             $table->increments('id');
             $table->integer('group_id');
             $table->integer('user_id');
+            $table->integer('status_id');
             $table->boolean('see_all')->default(0);
             $table->string('name');
             $table->string('company_name');

@@ -20,7 +20,11 @@ Route::get('/test', function () {
 });
 
 
-
+/*
+| В случае если пользователь авторизован,
+| то здесь будут происходить все действия
+| Single Page Application
+*/
 Route::get('/', array(
     'as'=> 'home',
     'uses'=> 'HomeController@home'
@@ -31,6 +35,15 @@ Route::get('/user/{username?}', array(
         'as' => 'profile-user',
         'uses' => 'ProfileController@user'
     )
+);
+
+
+/*
+| Выдача шаблонов для View Angular.JS
+*/
+Route::get('/template/{name}', function ($name) {
+        return View::make('angular-pages.'.$name);
+    }
 );
 
 

@@ -24,6 +24,16 @@ class Client  extends Eloquent {
 
 
    /**
+    * Связь с таблицей Пользователя
+    */
+   public function status()
+   {
+       return $this->hasOne('Client_status');
+    }
+
+
+
+   /**
     * Связь с таблицей контактов клиента
     */
    public function contacts()

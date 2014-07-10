@@ -9,3 +9,6 @@
     .form-signin input[type="text"], .form-signin input[type="email"] {margin-bottom: -1px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-style: solid; border-right-style: solid; border-bottom-style: none; border-left-style: solid; border-color: #000; }
     .form-signin input[type="password"] {margin-bottom: 10px; border-top-left-radius: 0; border-top-right-radius: 0; border-top-style: none; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-color: rgb(0,0,0); border-top:1px solid rgba(0,0,0,0.08); }
     .form-signin-heading {color: #fff; text-align: center; text-shadow: 0 2px 2px rgba(0,0,0,0.5); }
+
+
+    .pagination a{cursor: pointer;}
