@@ -10,7 +10,7 @@ class Client  extends Eloquent {
     */
     public function user()
     {
-       return $this->hasOne('User');
+       return $this->hasOne('User', 'id');
     }
 
 
@@ -29,7 +29,7 @@ class Client  extends Eloquent {
     */
     public function status()
     {
-       return $this->hasOne('Client_status');
+       return $this->hasOne('Client_status', 'id');
     }
 
 
@@ -39,7 +39,15 @@ class Client  extends Eloquent {
     */
     public function contacts()
     {
-       return $this->hasMany('Client_contacts', 'client_id');
+       return $this->hasMany('Client_contacts', 'client_id')
+                   ->select(array(
+                        'address',
+                        'client_id',
+                        'mail',
+                        'name',
+                        'phone',
+                        'position'
+                    ));
     }
 
 }

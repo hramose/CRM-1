@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder {
 
 
         // заполняем таблицу статусов
-        $status = array('Входящий', 'Клиент', 'Архив', 'Отказ', 'Корзина');
+        $status = array('Входящий', 'Клиент', 'Архив', 'Отказ');
 
         foreach ($status as $v) {
             $c_stat = new Client_status;

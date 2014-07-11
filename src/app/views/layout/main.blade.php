@@ -18,7 +18,7 @@
     @endif
 
 </head>
-<body>
+<body id="body">
 
         <div class="container">
 

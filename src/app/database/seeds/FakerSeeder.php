@@ -41,13 +41,13 @@ class FakerSeeder extends Seeder
         $user->save();
 
 
-        $company_count = 30;
+        $company_count = 500;
 
         for ($i=0; $i < $company_count; $i++) {
             Client::create(array(
                     'group_id'     => 1,
                     'user_id'      => rand(1, 3),
-                    'status_id'    => rand(1, 5),
+                    'status_id'    => rand(1, 4),
                     'see_all'      => 1,
                     'name'         => $faker->name,
                     'company_name' => $faker->company,

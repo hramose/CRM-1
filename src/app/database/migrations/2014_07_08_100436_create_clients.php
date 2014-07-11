@@ -20,8 +20,8 @@ class CreateClients extends Migration {
             $table->boolean('see_all')->default(0);
             $table->string('name');
             $table->string('company_name');
-            $table->string('url', 250);
-            $table->string('about');
+            $table->string('url', 250)->nullable();
+            $table->string('about')->nullable();
             $table->timestamps();
         });
 	}

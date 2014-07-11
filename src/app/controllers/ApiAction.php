@@ -14,7 +14,6 @@ class ApiAction extends \BaseController {
             );
 
         $filter = array(
-              'page'   => (int)Input::get('page'),
               'curator'=> (int)Input::get('curator'),
               'status' => (int)Input::get('status'),
               );
@@ -23,23 +22,28 @@ class ApiAction extends \BaseController {
 
         $clients = Client::where(function ($query) use ($filter) {
 
-            if($filter['curator'])
-                $query->where('user_id', '=', $filter['curator']);
+                if($filter['curator'])
+                    $query->where('user_id', '=', $filter['curator']);
 
-            if($filter['status'])
-                $query->where('status_id', '=', $filter['status']);
+                if($filter['status'])
+                    $query->where('status_id', '=', $filter['status']);
 
-        })->orderBy('created_at', 'DESC')->get();
+                $query->where('group_id', '=', Auth::user()->groups_id )->orWhere('see_all', '=', '1');
+
+            })
+            ->select(array('id', 'created_at', 'name', 'url'))
+            ->orderBy('created_at', 'DESC')
+            ->get();
 
 
         foreach ($clients as $v) {
 
             $data['items'][] = array(
+                    'id'         => $v->id,
                     'name'       => $v->name,
                     'url'        => explode(' ', $v->url),
                     'created_at' => date("d.m.Y", strtotime( $v->created_at)),
                     'contact'    => $v->contacts->toArray(),
-                    'page'       => Input::get('page')
                 );
         }
 
@@ -68,5 +72,89 @@ class ApiAction extends \BaseController {
 
         return Response::json($data)->header('Content-Type', 'application/json');
     }
+
+
+    /**
+     * Метод для сохранения или обновления клиента
+     */
+    public function postSave(){
+
+        $data = array('status'=>false, 'message'=>'');
+
+        $validtor = Validator::make(Input::all(), array('name'=>'required','company_name'=>'required'));
+
+        if($validtor->fails()){
+
+                $data['message'] .=  "Плохо заполнили клиента.\nНе годится!!!";
+
+        }else{
+
+            $url = explode(' ', Input::get('url'));
+            $resUrl = array();
+
+            foreach ($url as $k => $v) {
+                $v = trim($v);
+                if(empty($v)) continue;
+                $resUrl[] = 'http://' . strtr($v, array('http://'=>''));
+            }
+
+            $id = (int)Input::get('client_id');
+
+            if($id===false){
+                $client = new Client;
+            }else{
+                $client = Client::find($id);
+            }
+
+            $client->name         = Input::get('name');
+            $client->company_name = Input::get('company_name');
+            $client->about        = Input::get('about');
+            $client->url          = implode(' ', $resUrl);
+            $client->group_id     = Auth::user()->groups_id;
+            $client->user_id      = Input::get('user_id')? Input::get('user_id') : Auth::user()->id;
+            $client->status_id    = Input::get('status_id')? Input::get('status_id') : 2; // статус Клиент
+
+            if($client->save()){
+                $data['status'] = true;
+                $data['message'] = 'Компания успешно сохранена';
+            }else{
+                $data['message'] = 'Не удалось сохранить компанию';
+            }
+        }
+
+        return Response::json($data)->header('Content-Type', 'application/json');
+    }
+
+
+
+    /**
+     * метод для получения данных о клиенте
+     */
+    public function postGetclient() {
+        $id = (int)Input::get('id');
+
+        $data = array();
+
+        if($id){
+            $client = Client::find($id);
+
+            $data['item'] = array(
+                  'client_id'    => $client->id,
+                  'about'        => $client->about,
+                  'name'         => $client->name,
+                  'company_name' => $client->company_name,
+                  'see_all'      => $client->see_all,
+                  'url'          => $client->url,
+                  'form_status'  => $client->status_id,
+                  'form_curator' => $client->user_id,
+                  'contacts'     => $client->contacts->toArray(),
+                  );
+
+
+        }
+
+        return Response::json($data)->header('Content-Type', 'application/json');
+    }
+
 
 }

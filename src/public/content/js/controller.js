@@ -1,6 +1,9 @@
 CRM.controller('MainCtrl', ['$scope', '$http',
     function($scope, $http) {
 
+        $scope.showForm = false;
+        $scope.client_id = 0;
+
         $scope.clients = [];
 
         $scope.page = 1;
@@ -11,6 +14,29 @@ CRM.controller('MainCtrl', ['$scope', '$http',
 
         $scope.curator = 0;
         $scope.curators = [];
+
+        $scope.form_statuses = [];
+        $scope.form_curators = [];
+
+
+        // ### Search ###
+        $scope.search = function(item) {
+            if($scope.query===undefined || $scope.query===''){
+                return true;
+            }
+
+            if (item.name.indexOf($scope.query) != -1) {
+                return true;
+            }
+
+            for (var i = 0; i < item.contact.length; i++) {
+                if(item.contact[i].name.indexOf($scope.query) != -1){
+                    return true;
+                }
+            }
+
+            return false;
+        };
 
         // получаем список кураторов
         var getSelect = function(Sname) {
@@ -30,6 +56,11 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                         }
 
                         for (var i = 0; i < data.items.length; i++) {
+                            $scope['form_' + Sname].push({
+                                id: data.items[i].id,
+                                name: (data.items[i].username || data.items[i].name)
+                            });
+
                             $scope[Sname].push({
                                 id: data.items[i].id,
                                 name: (data.items[i].username || data.items[i].name)
@@ -78,9 +109,99 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                     console.log(status, data);
                 });
         };
-
-
         $scope.show();
+
+
+
+        // ######## add/edit #########
+        $scope.BodyOver = function(over) {
+            var d = document.getElementById("body");
+
+            d.className = (over) ? 'ov-h' : '';
+        };
+
+
+
+        $scope.saveClient = function() {
+
+            var url = '/api/save',
+                data = {
+                    name: $scope.name,
+                    company_name: $scope.company_name,
+                    url: $scope.url,
+                    about: $scope.about,
+                    status_id: $scope.form_status,
+                    user_id: $scope.form_curator,
+                    client_id: $scope.client_id,
+                    see_all: $scope.see_all
+                };
+
+            if ((!data.user_id) || (!data.status_id)) {
+                alert('Статус и Куратор обязательно должны быть заполнены');
+                return false;
+            }
+
+
+
+            $http.post(url, data)
+                .success(function(data, status) {
+
+                    if (data && data.message) {
+                        alert(data.message);
+                    }
+
+                    if (data && data.status) {
+                        $scope.closeForm();
+                        $scope.show();
+                    }
+                })
+                .error(function(data, status) {
+                    alert('Возникли проблемы...');
+                    console.log(status, data);
+                });
+        };
+
+
+
+        $scope.editClient = function(id) {
+            var data = {
+                id: id
+            };
+
+            $scope.BodyOver(true);
+
+            $http.post('/api/getclient', data)
+                .success(function(data, status) {
+
+                    if (data && data.item) {
+                        for (var cl in data.item) {
+                            $scope[cl] = data.item[cl];
+                        }
+                    }
+
+                    $scope.showForm = true;
+                })
+                .error(function(data, status) {
+                    alert('Возникли проблемы...');
+                    console.log(status, data);
+                });
+        };
+
+
+
+        $scope.closeForm = function() {
+            $scope.showForm = false;
+            $scope.BodyOver();
+
+            $scope.name = '';
+            $scope.company_name = '';
+            $scope.url = '';
+            $scope.about = '';
+
+            // debugger;
+
+        };
+
     }
 
 ]);

@@ -5,7 +5,7 @@
 
     @if(Auth::check())
 
-        <p>Привет, {{Auth::user()->username}}.</p>
+        <p>Привет, <b>{{Auth::user()->username}}</a>.</p>
 
         <div ng-view></div>
 
