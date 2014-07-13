@@ -13,3 +13,16 @@ CRM.config(['$routeProvider',
 
     }
 ]);
+
+
+CRM.directive('addContact', [function () {
+    return {
+        restrict: 'E',
+        templateUrl: '/template/add-contact',
+        controller: function () {
+            //
+        },
+        controllerAs: 'contact'
+    };
+}]);
+

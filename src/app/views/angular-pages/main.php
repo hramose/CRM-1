@@ -35,6 +35,9 @@
             <li class="navbar-form">
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Поиск" ng-model="query" ng-change="search()">
+                    <button class="btn btn-default" ng-click="query=''; show(1);">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
                 </div>
             </li>
             <li>
@@ -133,12 +136,12 @@
 
         <div class="form-group">
             <label for="name">Название</label>
-            <input type="text" class="form-control" id="name" required ng-model="name">
+            <input type="text" class="form-control" id="name" ng-model="name">
         </div>
 
         <div class="form-group">
             <label for="company_name">Полное название</label>
-            <input type="text" class="form-control" id="company_name" required ng-model="company_name">
+            <input type="text" class="form-control" id="company_name" ng-model="company_name">
         </div>
 
 
@@ -161,19 +164,22 @@
 
         <div class="form-group">
             <label for="url">Адрес сайта (если несколько разделять пробелом)</label>
-            <input type="text" class="form-control" id="url" required ng-model="url">
+            <input type="text" class="form-control" id="url" ng-model="url">
         </div>
 
         <div class="form-group">
             <label for="about">О компании</label>
-            <textarea class="form-control" rows="3" id="about" required ng-model="about"></textarea>
+            <textarea class="form-control" rows="3" id="about" ng-model="about"></textarea>
         </div>
 
+<!--  -->
 
         <button type="button" class="btn btn-primary">Добавить контакт</button>
 
+        <br>
+        <br>
 
-
+        <add-contact></add-contact>
 
     </div>
 </div>
