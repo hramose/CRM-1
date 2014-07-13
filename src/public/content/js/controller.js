@@ -19,24 +19,29 @@ CRM.controller('MainCtrl', ['$scope', '$http',
         $scope.form_curators = [];
 
 
+
         // ### Search ###
-        $scope.search = function(item) {
-            if($scope.query===undefined || $scope.query===''){
-                return true;
-            }
+        $scope.search = function() {
+            if ($scope.query.length < 2)
+                return false;
 
-            if (item.name.indexOf($scope.query) != -1) {
-                return true;
-            }
-
-            for (var i = 0; i < item.contact.length; i++) {
-                if(item.contact[i].name.indexOf($scope.query) != -1){
-                    return true;
-                }
-            }
-
-            return false;
+            $scope.show();
         };
+
+
+        // pagination
+        var pagination = function(current, count) {
+            $scope.page = current;
+            $scope.pages = [];
+
+            for (var i = 1; i <= count; i++) {
+                $scope.pages.push(i);
+            }
+        };
+
+        // pagination(2, 5);
+
+
 
         // получаем список кураторов
         var getSelect = function(Sname) {
@@ -66,6 +71,10 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                                 name: (data.items[i].username || data.items[i].name)
                             });
                         }
+
+                        if (data.current && data.count) {
+                            pagination(data.current, data.count);
+                        }
                     }
                 });
         };
@@ -75,13 +84,17 @@ CRM.controller('MainCtrl', ['$scope', '$http',
 
 
 
-        $scope.show = function() {
+        $scope.show = function(page) {
+
+            if (page !== undefined)
+                $scope.page = page;
 
             // собираем даныне фильтра и номер страницы
             var data = {
                 page: $scope.page,
                 curator: $scope.curator,
-                status: $scope.status
+                status: $scope.status,
+                search: ($scope.query && $scope.query.length > 2) ? $scope.query : ''
             };
 
             $http.post('/api/show', data)
@@ -103,6 +116,13 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                             });
                         }
                     }
+
+                    if (data.page !== undefined && data.count !== undefined)
+                        pagination(data.page, data.count);
+
+                    if(data.sql)
+                        console.log( data.sql );
+
                 })
                 .error(function(data, status) {
                     alert('Возникли проблемы...');
@@ -150,9 +170,11 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                         alert(data.message);
                     }
 
+                    // $scope.client_id = data.client_id;
+
                     if (data && data.status) {
                         $scope.closeForm();
-                        $scope.show();
+                        $scope.show(1);
                     }
                 })
                 .error(function(data, status) {

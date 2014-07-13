@@ -43,4 +43,4 @@
     left: 0;
     right: 0;
 }
-.litbox-form .form-block .close{position: absolute; top: 10px; font-size: 1.8em; right: 28px; }
+.litbox-form .form-block .close{font-size: 1.8em; float: right; margin-top: 2px;}

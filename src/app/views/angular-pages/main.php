@@ -34,7 +34,7 @@
         <ul class="nav navbar-nav navbar-right">
             <li class="navbar-form">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Фильтр по названию" ng-model="query">
+                    <input type="text" class="form-control" placeholder="Поиск" ng-model="query" ng-change="search()">
                 </div>
             </li>
             <li>
@@ -56,6 +56,12 @@
 
 <!--  -->
 
+<ul class="pagination pagination-sm">
+  <li ng-class="{active: p==page}" ng-repeat="p in pages"><a ng-click="show(p)"> {{p}} </a></li>
+</ul>
+
+<!--  -->
+
 <table class="table table-striped table-hover table-bordered table-condensed">
     <tr>
         <th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
@@ -69,7 +75,7 @@
         </th>
     </tr>
 
-    <tr ng-repeat="client in clients | filter:query.name | orderBy:created_at:true">
+    <tr ng-repeat="client in clients">
         <td>
             <span class="created_at">{{ client.created_at }}</span>
             <button type="button" class="btn btn-default btn-xs" ng-click="editClient(client.id)">

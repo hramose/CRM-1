@@ -10,17 +10,20 @@ class ApiAction extends \BaseController {
     public function postShow() {
 
         $data = array(
+                'page' => (int)Input::get('page'),
                 'items' => array()
             );
 
         $filter = array(
               'curator'=> (int)Input::get('curator'),
               'status' => (int)Input::get('status'),
+              'search' => Input::get('search'),
               );
 
 
+        // Запрос к БД
+        $where = function ($query) use ($filter) {
 
-        $clients = Client::where(function ($query) use ($filter) {
 
                 if($filter['curator'])
                     $query->where('user_id', '=', $filter['curator']);
@@ -28,12 +31,29 @@ class ApiAction extends \BaseController {
                 if($filter['status'])
                     $query->where('status_id', '=', $filter['status']);
 
-                $query->where('group_id', '=', Auth::user()->groups_id )->orWhere('see_all', '=', '1');
+                if( !empty($filter['search']) && strlen($filter['search'])>2 )
+                    $query->where('name', 'LIKE', "%$filter[search]%");
 
-            })
+                $query->where(function ($query) {
+                    $query->where('group_id', '=', Auth::user()->groups_id )->orWhere('see_all', '=', '1');
+                });
+            };
+
+
+        $data['count'] = ceil( Client::where($where)->count() / 100 );
+
+
+        $clients = Client::where($where)
             ->select(array('id', 'created_at', 'name', 'url'))
+            ->skip(($data['page']-1)*100)->take(100)
             ->orderBy('created_at', 'DESC')
             ->get();
+
+
+        # Debug SQL
+        // $queries = DB::getQueryLog();
+        // $last_query = end($queries);
+        // $data['sql'] = $last_query;
 
 
         foreach ($clients as $v) {
@@ -100,7 +120,7 @@ class ApiAction extends \BaseController {
 
             $id = (int)Input::get('client_id');
 
-            if($id===false){
+            if($id==0){
                 $client = new Client;
             }else{
                 $client = Client::find($id);
@@ -117,6 +137,7 @@ class ApiAction extends \BaseController {
             if($client->save()){
                 $data['status'] = true;
                 $data['message'] = 'Компания успешно сохранена';
+                $data['client_id'] = $client->id;
             }else{
                 $data['message'] = 'Не удалось сохранить компанию';
             }
