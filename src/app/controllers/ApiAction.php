@@ -31,8 +31,23 @@ class ApiAction extends \BaseController {
                 if($filter['status'])
                     $query->where('status_id', '=', $filter['status']);
 
-                if( !empty($filter['search']) && strlen($filter['search'])>2 )
+                if( !empty($filter['search']) && strlen($filter['search'])>2 ){
                     $query->where('name', 'LIKE', "%$filter[search]%");
+
+                    $cont_arr = Client_contacts::where('name', 'LIKE', "%$filter[search]%")->select('client_id')->get()->toArray();
+                    $cont_id = array();
+
+                    foreach ($cont_arr as $v) {
+                        $cont_id[] = $v['client_id'];
+                    }
+
+                    if(count($cont_id)){
+                        $query->orWhereIn('id', $cont_id);
+                    }
+
+                }
+
+
 
                 $query->where(function ($query) {
                     $query->where('group_id', '=', Auth::user()->groups_id )->orWhere('see_all', '=', '1');
