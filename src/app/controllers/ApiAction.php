@@ -32,20 +32,23 @@ class ApiAction extends \BaseController {
                     $query->where('status_id', '=', $filter['status']);
 
                 if( !empty($filter['search']) && strlen($filter['search'])>2 ){
-                    $query->where('name', 'LIKE', "%$filter[search]%");
 
-                    $cont_arr = Client_contacts::where('name', 'LIKE', "%$filter[search]%")->select('client_id')->get()->toArray();
-                    $cont_id = array();
+                    $query->where(function ($query) use ($filter) {
 
-                    foreach ($cont_arr as $v) {
-                        $cont_id[] = $v['client_id'];
-                    }
+                        $query->where('name', 'LIKE', "%$filter[search]%");
 
-                    if(count($cont_id)){
-                        $query->orWhereIn('id', $cont_id);
-                    }
+                        $cont_arr = Client_contacts::where('name', 'LIKE', "%$filter[search]%")->select('client_id')->get()->toArray();
+                        $cont_id = array();
 
-                }
+                        foreach ($cont_arr as $v) {
+                            $cont_id[] = $v['client_id'];
+                        }
+
+                        if(count($cont_id)){
+                            $query->orWhereIn('id', $cont_id);
+                        }
+                    });
+                } // end search
 
 
 
@@ -66,9 +69,9 @@ class ApiAction extends \BaseController {
 
 
         # Debug SQL
-        // $queries = DB::getQueryLog();
-        // $last_query = end($queries);
-        // $data['sql'] = $last_query;
+        $queries = DB::getQueryLog();
+        $last_query = end($queries);
+        $data['sql'] = $last_query;
 
 
         foreach ($clients as $v) {
