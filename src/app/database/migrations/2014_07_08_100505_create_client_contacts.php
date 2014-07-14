@@ -16,11 +16,11 @@ class CreateClientContacts extends Migration {
             $table->increments('id');
             $table->integer('client_id');
             $table->string('name');
-            $table->string('mail');
-            $table->string('phone');
-            $table->string('address');
-            $table->string('position');
-            $table->dateTime('birth');
+            $table->string('mail')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->string('position')->nullable();
+            $table->dateTime('birth')->nullable();
             $table->timestamps();
         });
 	}

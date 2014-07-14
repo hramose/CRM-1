@@ -10,7 +10,7 @@ class Client_contacts  extends Eloquent {
     */
    public function client()
    {
-       return $this->belongsTo('Client', 'id');
+       return $this->belongsTo('Client', 'client_id');
    }
 
 }

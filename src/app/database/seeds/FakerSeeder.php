@@ -18,7 +18,7 @@ class FakerSeeder extends Seeder
         $user->username = 'Aleksey Pivkin';
         $user->password = Hash::make('123123');
         $user->active = 1;
-        $user->groups_id = 1;
+        $user->group_id = 1;
         $user->group_admin = 1;
         $user->save();
 
@@ -27,7 +27,7 @@ class FakerSeeder extends Seeder
         $user->username = 'Avil';
         $user->password = Hash::make('123123');
         $user->active = 1;
-        $user->groups_id = 1;
+        $user->group_id = 2;
         $user->group_admin = 0;
         $user->save();
 
@@ -36,7 +36,7 @@ class FakerSeeder extends Seeder
         $user->username = 'mr.Alex';
         $user->password = Hash::make('123123');
         $user->active = 1;
-        $user->groups_id = 1;
+        $user->group_id =2;
         $user->group_admin = 0;
         $user->save();
 

@@ -18,7 +18,12 @@ class DatabaseSeeder extends Seeder {
 
         $group = new Group;
         $group->name = 'Администратор';
-        $group->rule = '1111';
+        $group->rule = '11111';
+        $group->save();
+
+        $group = new Group;
+        $group->name = 'Отдел продаж';
+        $group->rule = '01110';
         $group->save();
 
 
@@ -34,12 +39,5 @@ class DatabaseSeeder extends Seeder {
 
 		$this->call('FakerSeeder');
 	}
-
-
-
-
-
-
-
 
 }

@@ -53,7 +53,7 @@ class ApiAction extends \BaseController {
 
 
                 $query->where(function ($query) {
-                    $query->where('group_id', '=', Auth::user()->groups_id )->orWhere('see_all', '=', '1');
+                    $query->where('group_id', '=', Auth::user()->group_id )->orWhere('see_all', '=', '1');
                 });
             };
 
@@ -69,9 +69,9 @@ class ApiAction extends \BaseController {
 
 
         # Debug SQL
-        $queries = DB::getQueryLog();
-        $last_query = end($queries);
-        $data['sql'] = $last_query;
+        // $queries = DB::getQueryLog();
+        // $last_query = end($queries);
+        // $data['sql'] = $last_query;
 
 
         foreach ($clients as $v) {
@@ -148,14 +148,37 @@ class ApiAction extends \BaseController {
             $client->company_name = Input::get('company_name');
             $client->about        = Input::get('about');
             $client->url          = implode(' ', $resUrl);
-            $client->group_id     = Auth::user()->groups_id;
+            $client->group_id     = Auth::user()->group_id;
             $client->user_id      = Input::get('user_id')? Input::get('user_id') : Auth::user()->id;
             $client->status_id    = Input::get('status_id')? Input::get('status_id') : 2; // статус Клиент
+
 
             if($client->save()){
                 $data['status'] = true;
                 $data['message'] = 'Компания успешно сохранена';
                 $data['client_id'] = $client->id;
+
+
+                // Сохранение контакта
+                $contact = Input::get('contact');
+
+                if(!empty($contact) && !empty($contact['contact_name'])){
+
+                    if($contact['contact_id'] == 0){
+                        $mContact = new Client_contacts;
+                    }else{
+                        $mContact = Client_contacts::find($contact['contact_id']);
+                    }
+
+                    $mContact->client_id = $data['client_id'];
+                    $mContact->name = $contact['contact_name'];
+                    $mContact->mail = empty($contact['contact_mail']) ? '' : $contact['contact_mail'];
+                    $mContact->phone = empty($contact['contact_phone']) ? '' : $contact['contact_phone'];
+                    $mContact->position = empty($contact['contact_position']) ? '' : $contact['contact_position'];
+                    $mContact->address = empty($contact['contact_address']) ? '' : $contact['contact_address'];
+
+                    $mContact->save();
+                }
             }else{
                 $data['message'] = 'Не удалось сохранить компанию';
             }
@@ -186,7 +209,7 @@ class ApiAction extends \BaseController {
                   'url'          => $client->url,
                   'form_status'  => $client->status_id,
                   'form_curator' => $client->user_id,
-                  'contacts'     => $client->contacts->toArray(),
+                  'form_contacts'     => $client->contacts->toArray(),
                   );
 
 
@@ -194,6 +217,74 @@ class ApiAction extends \BaseController {
 
         return Response::json($data)->header('Content-Type', 'application/json');
     }
+
+
+
+    /**
+     * метод для удаления контакта компании
+     * TODO: Добавить проверку прав
+     */
+    public function postDeletecontact() {
+        $data = array('status'=>false);
+
+        $id = (int)Input::get('contact_id');
+
+        if($id>0){
+            $contact = Client_contacts::findOrFail($id);
+
+            $user = User::find(Auth::user()->id);
+
+            // добавить проверку прав
+            $group_rule = (($user->group->id === $contact->client->group_id) && checkRight()) ||
+                            ($user->id === $contact->client->user_id);
+
+            if($contact->client_id === Auth::user()->id || $group_rule){
+                if($contact->delete()){
+                    $data['message'] = 'Контакт удален';
+                    $data['status'] = true;
+                }
+            }else{
+                $data['message'] = 'У вас нет прав на данное действие';
+            }
+        }
+
+        return Response::json($data)->header('Content-Type', 'application/json');
+    }
+
+
+    /**
+     * метод для удаления компании
+     * TODO: Добавить проверку прав
+     */
+    public function postDeleteclient() {
+        $data = array('status'=>false);
+
+        $id = (int)Input::get('client_id');
+
+        if($id>0){
+            $client = Client::find($id);
+
+            $user = User::find(Auth::user()->id);
+
+            // добавить проверку прав
+            $group_rule = (($user->group->id === $client->group_id) && checkRight()) ||
+                            ($user->id === $client->user_id);
+
+            if($client->client_id === Auth::user()->id || $group_rule){
+                if($client->delete()){
+                    $data['message'] = 'Клиент удален';
+                    $data['status'] = true;
+
+                    Client_contacts::where('client_id', '=', $id)->delete();
+                }
+            }else{
+                $data['message'] = 'У вас нет прав на данное действие';
+            }
+        }
+
+        return Response::json($data)->header('Content-Type', 'application/json');
+    }
+
 
 
 }

@@ -2,9 +2,12 @@ CRM.controller('MainCtrl', ['$scope', '$http',
     function($scope, $http) {
 
         $scope.showForm = false;
+        $scope.edit_Contact = false;
         $scope.client_id = 0;
+        $scope.contact_id = 0;
 
         $scope.clients = [];
+        $scope.form_contacts = [];
 
         $scope.page = 1;
         $scope.pages = [];
@@ -39,44 +42,50 @@ CRM.controller('MainCtrl', ['$scope', '$http',
             }
         };
 
-        // pagination(2, 5);
+        var sendPost = function(url, data, callback) {
+            $http.post(url, data)
+                .success(callback)
+                .error(function(data, status) {
+                    alert('Возникли проблемы...');
+                    console.log(status, data);
+                });
+        };
 
 
 
         // получаем список кураторов
         var getSelect = function(Sname) {
 
-            $http.post('/api/' + Sname)
-                .success(function(data, status) {
-                    $scope[Sname] = [];
+            sendPost('/api/' + Sname, {}, function(data) {
+                $scope[Sname] = [];
 
-                    $scope[Sname].push({
-                        id: 0,
-                        name: 'Все'
-                    });
-
-                    if (data.items) {
-                        if (typeof data.items === 'string') {
-                            data.items = JSON.parse(data.items);
-                        }
-
-                        for (var i = 0; i < data.items.length; i++) {
-                            $scope['form_' + Sname].push({
-                                id: data.items[i].id,
-                                name: (data.items[i].username || data.items[i].name)
-                            });
-
-                            $scope[Sname].push({
-                                id: data.items[i].id,
-                                name: (data.items[i].username || data.items[i].name)
-                            });
-                        }
-
-                        if (data.current && data.count) {
-                            pagination(data.current, data.count);
-                        }
-                    }
+                $scope[Sname].push({
+                    id: 0,
+                    name: 'Все'
                 });
+
+                if (data.items) {
+                    if (typeof data.items === 'string') {
+                        data.items = JSON.parse(data.items);
+                    }
+
+                    for (var i = 0; i < data.items.length; i++) {
+                        $scope['form_' + Sname].push({
+                            id: data.items[i].id,
+                            name: (data.items[i].username || data.items[i].name)
+                        });
+
+                        $scope[Sname].push({
+                            id: data.items[i].id,
+                            name: (data.items[i].username || data.items[i].name)
+                        });
+                    }
+
+                    if (data.current && data.count) {
+                        pagination(data.current, data.count);
+                    }
+                }
+            });
         };
 
         getSelect('curators');
@@ -97,37 +106,32 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                 search: ($scope.query && $scope.query.length > 2) ? $scope.query : ''
             };
 
-            $http.post('/api/show', data)
-                .success(function(data, status) {
-                    $scope.clients = [];
+            sendPost('/api/show', data, function(data) {
+                $scope.clients = [];
 
-                    if (data.items) {
-                        if (typeof data.items === 'string') {
-                            data.items = JSON.parse(data.items);
-                        }
-
-                        for (var i = 0; i < data.items.length; i++) {
-                            $scope.clients.push({
-                                id: data.items[i].id,
-                                name: data.items[i].name,
-                                url: data.items[i].url,
-                                contact: data.items[i].contact,
-                                created_at: data.items[i].created_at
-                            });
-                        }
+                if (data.items) {
+                    if (typeof data.items === 'string') {
+                        data.items = JSON.parse(data.items);
                     }
 
-                    if (data.page !== undefined && data.count !== undefined)
-                        pagination(data.page, data.count);
+                    for (var i = 0; i < data.items.length; i++) {
+                        $scope.clients.push({
+                            id: data.items[i].id,
+                            name: data.items[i].name,
+                            url: data.items[i].url,
+                            contact: data.items[i].contact,
+                            created_at: data.items[i].created_at
+                        });
+                    }
+                }
 
-                    if(data.sql)
-                        console.log( data.sql );
+                if (data.page !== undefined && data.count !== undefined)
+                    pagination(data.page, data.count);
 
-                })
-                .error(function(data, status) {
-                    alert('Возникли проблемы...');
-                    console.log(status, data);
-                });
+                if (data.sql)
+                    console.log(data.sql);
+
+            });
         };
         $scope.show();
 
@@ -143,44 +147,43 @@ CRM.controller('MainCtrl', ['$scope', '$http',
 
 
         $scope.saveClient = function() {
-
-            var url = '/api/save',
-                data = {
-                    name: $scope.name,
-                    company_name: $scope.company_name,
-                    url: $scope.url,
-                    about: $scope.about,
-                    status_id: $scope.form_status,
-                    user_id: $scope.form_curator,
-                    client_id: $scope.client_id,
-                    see_all: $scope.see_all
-                };
+            var data = {
+                name: $scope.name,
+                company_name: $scope.company_name,
+                url: $scope.url,
+                about: $scope.about,
+                status_id: $scope.form_status,
+                user_id: $scope.form_curator,
+                client_id: $scope.client_id,
+                see_all: $scope.see_all,
+                contact: {
+                    contact_id: $scope.contact_id,
+                    contact_name: $scope.contact_name,
+                    contact_mail: $scope.contact_mail,
+                    contact_phone: $scope.contact_phone,
+                    contact_position: $scope.contact_position,
+                    contact_address: $scope.contact_address
+                }
+            };
 
             if ((!data.user_id) || (!data.status_id)) {
                 alert('Статус и Куратор обязательно должны быть заполнены');
                 return false;
             }
 
+            sendPost('/api/save', data, function(data) {
 
+                if (data && data.message) {
+                    alert(data.message);
+                }
 
-            $http.post(url, data)
-                .success(function(data, status) {
+                // $scope.client_id = data.client_id;
 
-                    if (data && data.message) {
-                        alert(data.message);
-                    }
-
-                    // $scope.client_id = data.client_id;
-
-                    if (data && data.status) {
-                        $scope.closeForm();
-                        $scope.show(1);
-                    }
-                })
-                .error(function(data, status) {
-                    alert('Возникли проблемы...');
-                    console.log(status, data);
-                });
+                if (data && data.status) {
+                    $scope.closeForm();
+                    $scope.show(1);
+                }
+            });
         };
 
 
@@ -192,23 +195,17 @@ CRM.controller('MainCtrl', ['$scope', '$http',
 
             $scope.BodyOver(true);
 
-            $http.post('/api/getclient', data)
-                .success(function(data, status) {
+            sendPost('/api/getclient', data, function(data) {
 
-                    if (data && data.item) {
-                        for (var cl in data.item) {
-                            $scope[cl] = data.item[cl];
-                        }
+                if (data && data.item) {
+                    for (var cl in data.item) {
+                        $scope[cl] = data.item[cl];
                     }
+                }
 
-                    $scope.showForm = true;
-                })
-                .error(function(data, status) {
-                    alert('Возникли проблемы...');
-                    console.log(status, data);
-                });
+                $scope.showForm = true;
+            });
         };
-
 
 
         $scope.closeForm = function() {
@@ -220,10 +217,71 @@ CRM.controller('MainCtrl', ['$scope', '$http',
             $scope.url = '';
             $scope.about = '';
 
-            // debugger;
+            $scope.edit_Contact = false;
+            $scope.contact_id = 0;
+            $scope.contact_name = '';
+            $scope.contact_mail = '';
+            $scope.contact_phone = '';
+            $scope.contact_position = '';
+            $scope.contact_address = '';
+        };
 
+
+
+        $scope.deleteContact = function(contact) {
+
+            if (!confirm('Вы уверены что хотите удалить "' + contact.name + '"?')) {
+                return false;
+            }
+
+            var data = {
+                contact_id: contact.id,
+            };
+
+            sendPost('/api/deletecontact', data, function(data) {
+                if (data.status) {
+                    var i = $scope.form_contacts.indexOf(contact);
+                    $scope.form_contacts.splice(i, 1);
+                }
+
+                if (data.message)
+                    alert(data.message);
+            });
+        };
+
+
+        $scope.deleteClient = function(client_id) {
+
+            if (!confirm('Вы уверены что хотите удалить эту компанию?')) {
+                return false;
+            }
+
+            var data = {
+                client_id: client_id
+            };
+
+            sendPost('/api/deleteclient', data, function(data) {
+                if (data.status) {
+                    $scope.closeForm();
+                    $scope.show();
+                }
+
+                if (data.message)
+                    alert(data.message);
+            });
+        };
+
+
+        $scope.editThisContact = function(contact) {
+            $scope.contact_id = contact.id;
+            $scope.contact_name = contact.name;
+            $scope.contact_mail = contact.mail;
+            $scope.contact_phone = contact.phone;
+            $scope.contact_position = contact.position;
+            $scope.contact_address = contact.address;
+
+            $scope.edit_Contact = true;
         };
 
     }
-
 ]);

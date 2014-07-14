@@ -15,7 +15,7 @@ class Group extends Eloquent {
     */
    public function users()
    {
-       return $this->belongsToMany('User', 'group_is');
+       return $this->hasMany('User', 'group_id'); //, 'group_id');
    }
 
 
@@ -24,7 +24,7 @@ class Group extends Eloquent {
     */
    public function clients()
    {
-       return $this->belongsToMany('Client', 'group_id');
+       return $this->hasMany('Client', 'group_id');
    }
 
 }

@@ -110,12 +110,13 @@
 
     <div class="jumbotron form-block col-xs-12 col-sm-12 col-md-10 col-lg-8">
 
-        <a ng-click="closeForm()" class="close">X</a>
+        <a ng-click="closeForm(); editContact=false;" class="close">X</a>
 
         <h3>Добавить организацию</h3>
         <hr>
         <div class="form-group pull-right">
-            <button class="btn btn-success" ng-click="saveClient()">Сохранить</button>
+            <button class="btn btn-success" ng-click="saveClient(); editContact=false;">Сохранить</button>
+            <button class="btn btn-danger" ng-click="deleteClient(client_id); editContact=false;">Удалить</button>
         </div>
 
         <input type="hidden" ng-model="client_id">
@@ -174,12 +175,67 @@
 
 <!--  -->
 
-        <button type="button" class="btn btn-primary">Добавить контакт</button>
+        <button type="button"
+                class="btn btn-primary"
+                ng-click="edit_Contact=true"
+                ng-class="{hidden: edit_Contact==true}">Добавить контакт</button>
 
         <br>
         <br>
 
-        <add-contact></add-contact>
+        <div class="alert alert-info" ng-class="{hidden: edit_Contact!=true}">
+
+            <button class="btn btn-danger pull-right" ng-click="edit_Contact=false; contact_id=0; contact_name=''; contact_mail=''; contact_phone=''; contact_position=''; contact_address='';">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+
+            <input type="hidden" ng-model="contact_id" value="0">
+
+            <br>
+            <div class="form-group">
+                <label for="contact_name">Имя</label>
+                <input type="text" class="form-control" id="contact_name" ng-model="contact_name">
+            </div>
+
+            <div class="form-group">
+                <label for="contact_mail">email</label>
+                <input type="text" class="form-control" id="contact_mail" ng-model="contact_mail">
+            </div>
+
+            <div class="form-group">
+                <label for="contact_phone">Телефон</label>
+                <input type="text" class="form-control" id="contact_phone" ng-model="contact_phone">
+            </div>
+
+            <div class="form-group">
+                <label for="contact_position">Должность</label>
+                <input type="text" class="form-control" id="contact_position" ng-model="contact_position">
+            </div>
+
+            <div class="form-group">
+                <label for="client_address">Адрес</label>
+                <textarea class="form-control" rows="3" id="contact_address" ng-model="contact_address"></textarea>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="well" ng-repeat="cont in form_contacts">
+            <a class="btn btn-danger pull-right" ng-click="deleteContact(cont)">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
+
+            <a class="btn btn-info pull-right" ng-click="editThisContact(cont)">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+
+            <i>Имя:</i>       {{ cont.name }}<br>
+            <i>e-mail:</i>    {{ cont.mail }}<br>
+            <i>Тел.</i>:      {{ cont.phone }}<br>
+            <i>Должность:</i> {{ cont.position }}<br>
+            <i>Адрес:</i> <br>
+            {{ cont.address }}<br>
+        </div>
 
     </div>
 </div>

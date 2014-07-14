@@ -41,6 +41,7 @@ class Client  extends Eloquent {
     {
        return $this->hasMany('Client_contacts', 'client_id')
                    ->select(array(
+                        'id',
                         'address',
                         'client_id',
                         'mail',
