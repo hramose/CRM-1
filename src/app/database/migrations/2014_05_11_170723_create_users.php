@@ -22,7 +22,7 @@ class CreateUsers extends Migration {
             $table->string('remember_token', 100)->nullable();
             $table->boolean('active');
             $table->integer('group_id');
-            $table->boolean('group_admin');
+            $table->boolean('group_admin', false);
             $table->timestamps();
         });
 	}

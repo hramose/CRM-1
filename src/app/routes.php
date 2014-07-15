@@ -6,17 +6,10 @@
 |--------------------------------------------------------------------------
 |
 */
-
 Route::get('/test', function () {
-
-    header('Content-Type: text/html; charset=utf-8');
-
     $user  = User::find(1);
-
     $x = $user->group->name;
-
     dd($x);
-
 });
 
 
@@ -30,6 +23,14 @@ Route::get('/', array(
     'uses'=> 'HomeController@home'
 ));
 
+
+
+/*
+| На случай если к пост методам решат обратиться напрямую
+*/
+Route::get('/api/{fun?}', function () {
+    return Redirect::route('home');
+});
 
 Route::get('/user/{username?}', array(
         'as' => 'profile-user',

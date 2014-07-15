@@ -70,5 +70,12 @@ class FakerSeeder extends Seeder
                 ));
         }
 
+        for ($i=0; $i < $company_count+100; $i++) {
+            Client_history::create(array(
+                    'client_id' => rand(1, $company_count),
+                    'event'     => $faker->sentence( rand(3, 10) )
+                ));
+        }
+
     }
 }

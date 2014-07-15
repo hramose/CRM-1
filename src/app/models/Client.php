@@ -23,6 +23,15 @@ class Client  extends Eloquent {
     }
 
 
+    /**
+    * Связь с таблицей истории
+    */
+    public function history()
+    {
+       return $this->hasMany('Client_history');
+    }
+
+
 
     /**
     * Связь с таблицей Пользователя

@@ -24,6 +24,7 @@
 .hidden{display: none;}
 .ov-h{overflow: hidden; }
 .litbox-form{
+    z-index: 1000;
     position: fixed;
     top: 0px;
     left: 0px;
@@ -44,3 +45,7 @@
     right: 0;
 }
 .litbox-form .form-block .close{font-size: 1.8em; float: right; margin-top: 2px;}
+
+.block{
+    margin-top: 10px;
+}

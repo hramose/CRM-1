@@ -90,11 +90,13 @@ class AccountController extends BaseController {
             $code     = str_random(60);
 
             $user = User::create(array(
-                    'email'    => $email,
-                    'username' => $username,
-                    'password' => Hash::make($password),
-                    'code'     => $code,
-                    'active'   => 0
+                    'email'       => $email,
+                    'username'    => $username,
+                    'password'    => Hash::make($password),
+                    'code'        => $code,
+                    'group_id'    => 0,
+                    'group_admin' => 0,
+                    'active'      => 0
                 ));
 
             if($user){

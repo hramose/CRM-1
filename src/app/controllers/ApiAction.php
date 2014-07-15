@@ -2,7 +2,6 @@
 
 class ApiAction extends \BaseController {
 
-
     /**
      * Показываем клиентов в зависимости от фильтра
      *
@@ -24,12 +23,13 @@ class ApiAction extends \BaseController {
         // Запрос к БД
         $where = function ($query) use ($filter) {
 
-
-                if($filter['curator'])
+                if($filter['curator']){
                     $query->where('user_id', '=', $filter['curator']);
+                }
 
-                if($filter['status'])
+                if($filter['status']){
                     $query->where('status_id', '=', $filter['status']);
+                }
 
                 if( !empty($filter['search']) && strlen($filter['search'])>2 ){
 
@@ -51,7 +51,7 @@ class ApiAction extends \BaseController {
                 } // end search
 
 
-
+                // Видим группы пользователя или те которые могут видеть все
                 $query->where(function ($query) {
                     $query->where('group_id', '=', Auth::user()->group_id )->orWhere('see_all', '=', '1');
                 });
@@ -62,7 +62,7 @@ class ApiAction extends \BaseController {
 
 
         $clients = Client::where($where)
-            ->select(array('id', 'created_at', 'name', 'url'))
+            ->select(array('id', 'created_at', 'name', 'url', 'user_id'))
             ->skip(($data['page']-1)*100)->take(100)
             ->orderBy('created_at', 'DESC')
             ->get();
@@ -73,10 +73,14 @@ class ApiAction extends \BaseController {
         // $last_query = end($queries);
         // $data['sql'] = $last_query;
 
+            $user_id =  Auth::user()->id;
+            $group_admin =  Auth::user()->group_admin;
+
 
         foreach ($clients as $v) {
 
             $data['items'][] = array(
+                    'edit'       => (($group_admin===1 || $user_id===$v->user_id) ? 1 : 0),
                     'id'         => $v->id,
                     'name'       => $v->name,
                     'url'        => explode(' ', $v->url),
@@ -90,6 +94,7 @@ class ApiAction extends \BaseController {
     }
 
 
+
     /**
      * Список статусов
      *
@@ -101,6 +106,7 @@ class ApiAction extends \BaseController {
     }
 
 
+
     /**
      * Список кураторов
      *
@@ -110,6 +116,7 @@ class ApiAction extends \BaseController {
 
         return Response::json($data)->header('Content-Type', 'application/json');
     }
+
 
 
     /**
@@ -142,45 +149,53 @@ class ApiAction extends \BaseController {
                 $client = new Client;
             }else{
                 $client = Client::find($id);
+
+                EventSaveClient($id);
             }
 
-            $client->name         = Input::get('name');
-            $client->company_name = Input::get('company_name');
-            $client->about        = Input::get('about');
-            $client->url          = implode(' ', $resUrl);
-            $client->group_id     = Auth::user()->group_id;
-            $client->user_id      = Input::get('user_id')? Input::get('user_id') : Auth::user()->id;
-            $client->status_id    = Input::get('status_id')? Input::get('status_id') : 2; // статус Клиент
+            if($client->user_id === Auth::user()->id || Auth::user()->group_admin===1){
+
+                $client->name         = Input::get('name');
+                $client->company_name = Input::get('company_name');
+                $client->about        = Input::get('about');
+                $client->see_all      = Input::get('see_all');
+                $client->url          = implode(' ', $resUrl);
+                $client->group_id     = Auth::user()->group_id;
+                $client->user_id      = Input::get('user_id')? Input::get('user_id') : Auth::user()->id;
+                $client->status_id    = Input::get('status_id')? Input::get('status_id') : 2; // статус Клиент
 
 
-            if($client->save()){
-                $data['status'] = true;
-                $data['message'] = 'Компания успешно сохранена';
-                $data['client_id'] = $client->id;
+                if($client->save()){
+                    $data['status'] = true;
+                    $data['message'] = 'Компания успешно сохранена';
+                    $data['client_id'] = $client->id;
 
+                    // Сохранение контакта
+                    $contact = Input::get('contact');
 
-                // Сохранение контакта
-                $contact = Input::get('contact');
+                    if(!empty($contact) && !empty($contact['contact_name'])){
 
-                if(!empty($contact) && !empty($contact['contact_name'])){
+                        if($contact['contact_id'] == 0){
+                            $mContact = new Client_contacts;
+                        }else{
+                            $mContact = Client_contacts::find($contact['contact_id']);
+                        }
 
-                    if($contact['contact_id'] == 0){
-                        $mContact = new Client_contacts;
-                    }else{
-                        $mContact = Client_contacts::find($contact['contact_id']);
+                        $mContact->client_id = $data['client_id'];
+                        $mContact->name = $contact['contact_name'];
+                        $mContact->mail = empty($contact['contact_mail']) ? '' : $contact['contact_mail'];
+                        $mContact->phone = empty($contact['contact_phone']) ? '' : $contact['contact_phone'];
+                        $mContact->position = empty($contact['contact_position']) ? '' : $contact['contact_position'];
+                        $mContact->address = empty($contact['contact_address']) ? '' : $contact['contact_address'];
+
+                        $mContact->save();
                     }
-
-                    $mContact->client_id = $data['client_id'];
-                    $mContact->name = $contact['contact_name'];
-                    $mContact->mail = empty($contact['contact_mail']) ? '' : $contact['contact_mail'];
-                    $mContact->phone = empty($contact['contact_phone']) ? '' : $contact['contact_phone'];
-                    $mContact->position = empty($contact['contact_position']) ? '' : $contact['contact_position'];
-                    $mContact->address = empty($contact['contact_address']) ? '' : $contact['contact_address'];
-
-                    $mContact->save();
+                }else{
+                    $data['message'] = 'Не удалось сохранить компанию';
                 }
+
             }else{
-                $data['message'] = 'Не удалось сохранить компанию';
+                 $data['message'] = 'У вас нет прав на изменение данной компании';
             }
         }
 
@@ -200,16 +215,22 @@ class ApiAction extends \BaseController {
         if($id){
             $client = Client::find($id);
 
+
+            $user_id =  Auth::user()->id;
+            $group_admin =  Auth::user()->group_admin;
+
             $data['item'] = array(
-                  'client_id'    => $client->id,
-                  'about'        => $client->about,
-                  'name'         => $client->name,
-                  'company_name' => $client->company_name,
-                  'see_all'      => $client->see_all,
-                  'url'          => $client->url,
-                  'form_status'  => $client->status_id,
-                  'form_curator' => $client->user_id,
-                  'form_contacts'     => $client->contacts->toArray(),
+                  'client_edit'   => (($group_admin===1 || $user_id===$client->user_id) ? 1 : 0),
+                  'client_id'     => $client->id,
+                  'about'         => $client->about,
+                  'name'          => $client->name,
+                  'company_name'  => $client->company_name,
+                  'see_all'       => $client->see_all,
+                  'url'           => $client->url,
+                  'form_status'   => $client->status_id,
+                  'form_curator'  => $client->user_id,
+                  'form_contacts' => $client->contacts->toArray(),
+                  'history'       => $client->history->toArray(),
                   );
 
 
@@ -234,11 +255,17 @@ class ApiAction extends \BaseController {
 
             $user = User::find(Auth::user()->id);
 
+            // id группы к которой относится контакт
+            $group_id = $contact->client->group_id;
+
             // добавить проверку прав
-            $group_rule = (($user->group->id === $contact->client->group_id) && checkRight()) ||
+            $group_rule = (($user->group->id === $contact->client->group_id) && checkRight('D', $group_id)) ||
                             ($user->id === $contact->client->user_id);
 
             if($contact->client_id === Auth::user()->id || $group_rule){
+
+                EventDeleteContact($id);
+
                 if($contact->delete()){
                     $data['message'] = 'Контакт удален';
                     $data['status'] = true;
@@ -250,6 +277,7 @@ class ApiAction extends \BaseController {
 
         return Response::json($data)->header('Content-Type', 'application/json');
     }
+
 
 
     /**
@@ -267,7 +295,7 @@ class ApiAction extends \BaseController {
             $user = User::find(Auth::user()->id);
 
             // добавить проверку прав
-            $group_rule = (($user->group->id === $client->group_id) && checkRight()) ||
+            $group_rule = (checkRight('D', $client->group_id)) ||
                             ($user->id === $client->user_id);
 
             if($client->client_id === Auth::user()->id || $group_rule){

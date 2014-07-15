@@ -13,17 +13,19 @@ class DatabaseSeeder extends Seeder {
 
         Group::truncate();
         User::truncate();
-        Client_status::truncate();
         Client::truncate();
+        Client_status::truncate();
+        Client_contacts::truncate();
+        Client_history::truncate();
 
         $group = new Group;
-        $group->name = 'Администратор';
-        $group->rule = '11111';
+        $group->name = 'Отдел 1';
+        $group->rule = '1111';
         $group->save();
 
         $group = new Group;
-        $group->name = 'Отдел продаж';
-        $group->rule = '01110';
+        $group->name = 'Отдел 2';
+        $group->rule = '1111';
         $group->save();
 
 

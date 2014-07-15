@@ -59,8 +59,13 @@
 
 <!--  -->
 
-<ul class="pagination pagination-sm">
-  <li ng-class="{active: p==page}" ng-repeat="p in pages"><a ng-click="show(p)"> {{p}} </a></li>
+<ul class="pagination pagination-sm pull-left">
+    <li ng-class="{active: p==page}" ng-repeat="p in pages"><a ng-click="show(p)"> {{p}} </a></li>
+
+<!-- AJAX animation -->
+    <li ng-class="{hidden : animate!=true}" class="animation pull-left col-xs-offset-1 col-xs-1 col-sm-offset-1 col-sm-1 col-md-offset-1 col-md-1 col-lg-offset-1 col-lg-1">
+        <img src="/content/img/ajax-loader.gif" alt="">
+    </li>
 </ul>
 
 <!--  -->
@@ -81,10 +86,10 @@
     <tr ng-repeat="client in clients">
         <td>
             <span class="created_at">{{ client.created_at }}</span>
-            <button type="button" class="btn btn-default btn-xs" ng-click="editClient(client.id)">
+            <button type="button" class="btn btn-default btn-xs" ng-click="editClient(client.id)" ng-show="client.edit">
                 <span class="glyphicon glyphicon-pencil"></span>
             </button>
-            {{ client.name }}
+            <a href="" ng-click="seeClient(client.id);">{{ client.name }}</a>
         </td>
 
         <td> <a href="{{ url }}" target="_blank" ng-repeat="url in client.url">{{ url }}<br></a></td>
@@ -123,15 +128,13 @@
 
 
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"
-                                ng-model="see_all"
-                                ng-true-value="1"
-                                ng-false-value="0"> Могут видеть члены других групп
-                    </label>
-                </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox"
+                            ng-model="see_all"
+                            ng-true-value="1"
+                            ng-false-value="0"> Могут видеть члены других групп
+                </label>
             </div>
         </div>
 
@@ -173,75 +176,170 @@
             <textarea class="form-control" rows="3" id="about" ng-model="about"></textarea>
         </div>
 
-<!--  -->
+    <!--  -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li ng-class="{active: block_contact==true}">
+                <a href="" ng-click="block_contact=true; block_history=false;">Контакты</a>
+            </li>
+            <li ng-class="{active: block_history==true}">
+                <a href="" ng-click="block_contact=false; block_history=true;">История</a>
+            </li>
+        </ul>
 
-        <button type="button"
-                class="btn btn-primary"
-                ng-click="edit_Contact=true"
-                ng-class="{hidden: edit_Contact==true}">Добавить контакт</button>
+        <div class="block" ng-class="{hidden: block_history==true}">
 
-        <br>
-        <br>
-
-        <div class="alert alert-info" ng-class="{hidden: edit_Contact!=true}">
-
-            <button class="btn btn-danger pull-right" ng-click="edit_Contact=false; contact_id=0; contact_name=''; contact_mail=''; contact_phone=''; contact_position=''; contact_address='';">
-                <span class="glyphicon glyphicon-remove"></span>
-            </button>
-
-            <input type="hidden" ng-model="contact_id" value="0">
-
+    <!--  -->
+            <button type="button"
+                    class="btn btn-primary"
+                    ng-click="edit_Contact=true"
+                    ng-class="{hidden: edit_Contact==true}">Добавить контакт</button>
             <br>
-            <div class="form-group">
-                <label for="contact_name">Имя</label>
-                <input type="text" class="form-control" id="contact_name" ng-model="contact_name">
+            <br>
+            <div class="alert alert-info" ng-class="{hidden: edit_Contact!=true}">
+
+                <button class="btn btn-danger pull-right" ng-click="edit_Contact=false; contact_id=0; contact_name=''; contact_mail=''; contact_phone=''; contact_position=''; contact_address='';">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+
+                <input type="hidden" ng-model="contact_id" value="0">
+
+                <br>
+                <div class="form-group">
+                    <label for="contact_name">Имя</label>
+                    <input type="text" class="form-control" id="contact_name" ng-model="contact_name">
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_mail">email</label>
+                    <input type="text" class="form-control" id="contact_mail" ng-model="contact_mail">
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_phone">Телефон</label>
+                    <input type="text" class="form-control" id="contact_phone" ng-model="contact_phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="contact_position">Должность</label>
+                    <input type="text" class="form-control" id="contact_position" ng-model="contact_position">
+                </div>
+
+                <div class="form-group">
+                    <label for="client_address">Адрес</label>
+                    <textarea class="form-control" rows="3" id="contact_address" ng-model="contact_address"></textarea>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="contact_mail">email</label>
-                <input type="text" class="form-control" id="contact_mail" ng-model="contact_mail">
-            </div>
+            <hr>
 
-            <div class="form-group">
-                <label for="contact_phone">Телефон</label>
-                <input type="text" class="form-control" id="contact_phone" ng-model="contact_phone">
-            </div>
+            <div class="well" ng-repeat="cont in form_contacts">
+                <a class="btn btn-danger pull-right" ng-click="deleteContact(cont)">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
 
-            <div class="form-group">
-                <label for="contact_position">Должность</label>
-                <input type="text" class="form-control" id="contact_position" ng-model="contact_position">
-            </div>
+                <a class="btn btn-info pull-right" ng-click="editThisContact(cont)">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
 
-            <div class="form-group">
-                <label for="client_address">Адрес</label>
-                <textarea class="form-control" rows="3" id="contact_address" ng-model="contact_address"></textarea>
+                <i>Имя:</i>       {{ cont.name }}<br>
+                <i>e-mail:</i>    {{ cont.mail }}<br>
+                <i>Тел.</i>:      {{ cont.phone }}<br>
+                <i>Должность:</i> {{ cont.position }}<br>
+                <i>Адрес:</i> <br>
+                {{ cont.address }}<br>
             </div>
         </div>
 
-        <hr>
 
-        <div class="well" ng-repeat="cont in form_contacts">
-            <a class="btn btn-danger pull-right" ng-click="deleteContact(cont)">
-                <span class="glyphicon glyphicon-remove"></span>
-            </a>
-
-            <a class="btn btn-info pull-right" ng-click="editThisContact(cont)">
-                <span class="glyphicon glyphicon-pencil"></span>
-            </a>
-
-            <i>Имя:</i>       {{ cont.name }}<br>
-            <i>e-mail:</i>    {{ cont.mail }}<br>
-            <i>Тел.</i>:      {{ cont.phone }}<br>
-            <i>Должность:</i> {{ cont.position }}<br>
-            <i>Адрес:</i> <br>
-            {{ cont.address }}<br>
-        </div>
+        <div class="block" ng-class="{hidden: block_contact==true}">
+            <div class="list-group">
+               <span class="list-group-item" ng-repeat="hist in history">
+                    <span class="created_at">{{hist.created_at}}</span>
+                   {{hist.event}}
+               </span>
+           </div>
+       </div>
 
     </div>
 </div>
 
 <!-- @Form -->
 
+
+<!-- SeeForm -->
+<div class="litbox-form" ng-class="{hidden: showClientBlock!=true}">
+
+    <div class="jumbotron form-block col-xs-12 col-sm-12 col-md-10 col-lg-8">
+        <a ng-click="closeForm(); showClientBlock=false;" class="close">X</a>
+
+        <button type="button" class="btn btn-default btn-xs"
+                ng-click="showClientBlock=false; editClient(client_id)"
+                ng-show="client_edit">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+
+        <h2>{{name}}</h2>
+
+        <table class="table table-striped table-hover table-bordered table-condensed">
+            <tr>
+                <td class="col-xs-5 col-sm-5 col-md-5 col-lg-5">Полное название</td>
+                <td>{{company_name}}</td>
+            </tr>
+            <tr>
+                <td>Куратор</td>
+                <td>{{form_curator_name}}</td>
+            </tr>
+            <tr>
+                <td>Статус</td>
+                <td>{{form_status_name}}</td>
+            </tr>
+            <tr>
+                <td>Могут видеть члены других групп</td>
+                <td>{{ (see_all==1)? '&#10004;' : '&#10006;' }}</td>
+            </tr>
+            <tr>
+                <td>Адрес сайта</td>
+                <td>{{url}}</td>
+            </tr>
+            <tr>
+                <td>О компании</td>
+                <td>{{about}}</td>
+            </tr>
+        </table>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li ng-class="{active: block_contact==true}">
+                <a href="" ng-click="block_contact=true; block_history=false;">Контакты</a>
+            </li>
+            <li ng-class="{active: block_history==true}">
+                <a href="" ng-click="block_contact=false; block_history=true;">История</a>
+            </li>
+        </ul>
+
+        <div class="block" ng-class="{hidden: block_history==true}">
+            <div class="well" ng-repeat="cont in form_contacts">
+                <i>Имя:</i>       {{ cont.name }}<br>
+                <i>e-mail:</i>    {{ cont.mail }}<br>
+                <i>Тел.</i>:      {{ cont.phone }}<br>
+                <i>Должность:</i> {{ cont.position }}<br>
+                <i>Адрес:</i> <br>
+                {{ cont.address }}<br>
+            </div>
+        </div>
+
+        <div class="block" ng-class="{hidden: block_contact==true}">
+            <div class="list-group">
+               <span class="list-group-item" ng-repeat="hist in history">
+                    <span class="created_at">{{hist.created_at}}</span>
+                   {{hist.event}}
+               </span>
+           </div>
+       </div>
+
+    </div>
+</div>
+
+<!-- @SeeForm -->
 
 
 

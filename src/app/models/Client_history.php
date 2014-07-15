@@ -1,12 +1,11 @@
 <?php
 
-class Client_status  extends Eloquent {
+class Client_history  extends Eloquent {
 
-    public $timestamps = false;
+    protected $table = 'client_historys';
 
-    protected $table = 'client_status';
+    protected $fillable = array('client_id', 'event');
 
-    protected $fillable = array('name');
 
    /**
     * Связь с таблицей клиентов

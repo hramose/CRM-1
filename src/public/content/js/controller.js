@@ -1,10 +1,16 @@
 CRM.controller('MainCtrl', ['$scope', '$http',
     function($scope, $http) {
 
+        $scope.animate = false;
         $scope.showForm = false;
+        $scope.showClientBlock = false;
         $scope.edit_Contact = false;
+
         $scope.client_id = 0;
         $scope.contact_id = 0;
+
+        $scope.block_history = false;
+        $scope.block_contact = true;
 
         $scope.clients = [];
         $scope.form_contacts = [];
@@ -43,8 +49,13 @@ CRM.controller('MainCtrl', ['$scope', '$http',
         };
 
         var sendPost = function(url, data, callback) {
+            $scope.animate = true;
+
             $http.post(url, data)
-                .success(callback)
+                .success(function(data) {
+                    $scope.animate = false;
+                    callback(data);
+                })
                 .error(function(data, status) {
                     alert('Возникли проблемы...');
                     console.log(status, data);
@@ -109,13 +120,14 @@ CRM.controller('MainCtrl', ['$scope', '$http',
             sendPost('/api/show', data, function(data) {
                 $scope.clients = [];
 
-                if (data.items) {
+                if (data.items!==undefined) {
                     if (typeof data.items === 'string') {
                         data.items = JSON.parse(data.items);
                     }
 
                     for (var i = 0; i < data.items.length; i++) {
                         $scope.clients.push({
+                            edit: data.items[i].edit,
                             id: data.items[i].id,
                             name: data.items[i].name,
                             url: data.items[i].url,
@@ -204,6 +216,36 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                 }
 
                 $scope.showForm = true;
+            });
+        };
+
+        $scope.seeClient = function(id) {
+            var data = {
+                id: id
+            };
+
+            $scope.BodyOver(true);
+
+            sendPost('/api/getclient', data, function(data) {
+
+                if (data && data.item) {
+                    for (var cl in data.item) {
+                        $scope[cl] = data.item[cl];
+
+                    }
+
+                    for (var i = 0; i < $scope.curators.length; i++) {
+                        if($scope.curators[i].id === $scope.form_curator)
+                            $scope.form_curator_name = $scope.curators[i].name;
+                    }
+
+                    for (var i = 0; i < $scope.statuses.length; i++) {
+                        if($scope.statuses[i].id === $scope.form_status)
+                            $scope.form_status_name = $scope.statuses[i].name;
+                    }
+                }
+
+                $scope.showClientBlock = true;
             });
         };
 
