@@ -78,3 +78,22 @@ Route::filter('csrf', function()
 		throw new Illuminate\Session\TokenMismatchException;
 	}
 });
+
+
+
+/**
+ * group_admin
+ */
+Route::filter('group_admin', function()
+{
+    if(!Auth::guest()){
+
+        $user = User::find(Auth::user()->id);
+
+        if($user->group_admin != 1){
+            return Redirect::to('/') ->with('global', 'У вас нет прав для доступа к данной странице');
+        }
+    }else{
+        return Redirect::to('/') ->with('global', 'У вас нет прав для доступа к данной странице');
+    }
+});

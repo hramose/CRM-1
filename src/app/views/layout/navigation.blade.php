@@ -1,6 +1,6 @@
 <nav class="navbar navbar-inverse" role="navigation">
 
-    <div class="collapse navbar-collapse">
+    <div class="navbar-collapse">
         <ul class="nav navbar-nav">
             <li{{isActive('home')}}>
                 <a href="{{ URL::route('home') }}">Главная</a>
@@ -13,6 +13,12 @@
             <li{{isActive('account-change-password')}}>
                 <a href="{{ URL::route('account-change-password') }}">Сменить пароль</a>
             </li>
+
+                @if(Auth::user()->group_admin==1)
+                <li{{isActive('admin_page')}}>
+                    <a href="{{ URL::route('admin_page') }}">Управление группами</a>
+                </li>
+                @endif
 
             @else
 

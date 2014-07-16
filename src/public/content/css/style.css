@@ -49,3 +49,27 @@
 .block{
     margin-top: 10px;
 }
+
+.scroll-to{
+position: fixed;
+width: 4%;
+top: 93%;
+right: 0;
+border: 1px solid #858484;
+text-align: center;
+font-size: 1.2em;
+font-weight: bold;
+cursor: pointer;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+
+background: #cedce7;
+background: -moz-linear-gradient(top,  #cedce7 0%, #596a72 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cedce7), color-stop(100%,#596a72));
+background: -webkit-linear-gradient(top,  #cedce7 0%,#596a72 100%);
+background: -o-linear-gradient(top,  #cedce7 0%,#596a72 100%);
+background: -ms-linear-gradient(top,  #cedce7 0%,#596a72 100%);
+background: linear-gradient(to bottom,  #cedce7 0%,#596a72 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=0 );
+
+}

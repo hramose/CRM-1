@@ -343,6 +343,11 @@
 
 
 
+<div class="scroll-to" ng-click=" scrollTop() ">
+    ^
+</div>
+
+<!-- window.scrollTo(0, 0);  -->
 
 
 

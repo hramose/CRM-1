@@ -2,12 +2,8 @@
 
 
 @section('js')
-    @if(Auth::check())
-    <script src="/content/js/app.js"></script>
-    <script src="/content/js/controller.js"></script>
-    @endif
+    <script src="/content/js/admin.js"></script>
 @stop
-
 
 
 @section('content')
@@ -24,5 +20,5 @@
 
     @endif
 
-@stop
 
+@stop

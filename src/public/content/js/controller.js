@@ -28,6 +28,12 @@ CRM.controller('MainCtrl', ['$scope', '$http',
         $scope.form_curators = [];
 
 
+        //  ### ScrollTo
+        $scope.scrollTop = function() {
+            window.scrollTo(0, 0);
+        };
+
+
 
         // ### Search ###
         $scope.search = function() {
@@ -120,7 +126,7 @@ CRM.controller('MainCtrl', ['$scope', '$http',
             sendPost('/api/show', data, function(data) {
                 $scope.clients = [];
 
-                if (data.items!==undefined) {
+                if (data.items !== undefined) {
                     if (typeof data.items === 'string') {
                         data.items = JSON.parse(data.items);
                     }
@@ -235,12 +241,12 @@ CRM.controller('MainCtrl', ['$scope', '$http',
                     }
 
                     for (var i = 0; i < $scope.curators.length; i++) {
-                        if($scope.curators[i].id === $scope.form_curator)
+                        if ($scope.curators[i].id === $scope.form_curator)
                             $scope.form_curator_name = $scope.curators[i].name;
                     }
 
                     for (var i = 0; i < $scope.statuses.length; i++) {
-                        if($scope.statuses[i].id === $scope.form_status)
+                        if ($scope.statuses[i].id === $scope.form_status)
                             $scope.form_status_name = $scope.statuses[i].name;
                     }
                 }

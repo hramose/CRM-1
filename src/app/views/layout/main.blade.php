@@ -2,7 +2,7 @@
 <html lang="en" ng-app="CRM">
 <head>
     <meta charset="UTF-8">
-    <title>Система аутентификации</title>
+    <title>CRM Light</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -12,10 +12,7 @@
     <script src="/content/angular/angular.js"></script>
     <script src="/content/angular-route/angular-route.min.js"></script>
 
-    @if(Auth::check())
-    <script src="/content/js/app.js"></script>
-    <script src="/content/js/controller.js"></script>
-    @endif
+     @yield('js', '')
 
 </head>
 <body id="body">
@@ -30,7 +27,7 @@
 
         @include('layout.navigation')
 
-        @yield('content')
+        @yield('content', '')
 
         </div>
 
